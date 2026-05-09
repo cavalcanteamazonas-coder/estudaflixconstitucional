@@ -12,12 +12,13 @@
             --white: #ffffff;
             --accent-gold: #d4af37;
             --text-main: #2c3e50;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--white);
             color: var(--text-main);
             line-height: 1.6;
@@ -25,63 +26,98 @@
 
         header {
             background: linear-gradient(135deg, var(--white) 0%, var(--light-silver) 100%);
-            padding: 50px 20px;
+            padding: 60px 20px;
             text-align: center;
-            border-bottom: 2px solid var(--primary-silver);
+            border-bottom: 1px solid var(--primary-silver);
         }
 
         .logo-container h1 {
-            font-size: 3rem;
-            letter-spacing: 5px;
+            font-size: 3.5rem;
+            letter-spacing: 6px;
             color: var(--dark-silver);
             font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
 
         .logo-container span { color: var(--accent-gold); }
 
-        .dev-info { font-size: 0.9rem; color: var(--dark-silver); margin-top: 10px; }
+        .developer-info {
+            font-size: 1rem;
+            color: var(--dark-silver);
+            margin-top: 15px;
+        }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-        .alert-box {
-            border: 1px solid var(--accent-gold);
-            padding: 20px;
+        .vade-mecan-alert {
+            background-color: var(--white);
+            border: 1px solid var(--primary-silver);
+            border-left: 5px solid var(--accent-gold);
+            padding: 25px;
             border-radius: 8px;
             text-align: center;
-            margin-bottom: 40px;
-            background: #fffdf5;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow);
         }
 
         .grid-temas {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
         .tema-card {
             background: var(--light-silver);
-            border: 1px solid var(--primary-silver);
-            padding: 25px;
             border-radius: 12px;
+            padding: 25px;
             text-decoration: none;
             color: var(--text-main);
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary-silver);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .tema-card:hover {
-            border-color: var(--accent-gold);
             transform: translateY(-5px);
-            background: var(--white);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--accent-gold);
+            background-color: var(--white);
+            box-shadow: var(--shadow);
         }
 
-        .tema-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-main); }
-        .badge { font-size: 0.7rem; font-weight: bold; color: var(--accent-gold); text-transform: uppercase; }
+        .badge-fgv {
+            display: inline-block;
+            background: var(--dark-silver);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .tema-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
         
-        footer { text-align: center; padding: 40px; color: var(--dark-silver); font-size: 0.8rem; }
+        .btn-link {
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--dark-silver);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--light-silver);
+        }
     </style>
 </head>
 <body>
@@ -89,34 +125,61 @@
 <header>
     <div class="logo-container">
         <h1>ESTUDA<span>FLIX</span></h1>
-        <p class="dev-info">Desenvolvido por <strong>Wallace Cavalcante</strong> | 3º Período de Direito</p>
+        <p class="developer-info">Desenvolvido por <strong>Wallace Cavalcante</strong> | 3º Período de Direito</p>
     </div>
 </header>
 
 <main class="container">
-    <div class="alert-box">
-        <strong>📚 AVISO:</strong> Tenha seu <strong>Vade Mecum</strong> em mãos. Questões padrão <strong>FGV</strong>.
+    <div class="vade-mecan-alert">
+        <h3>🚨 ATENÇÃO ACADÊMICO</h3>
+        <p>Recomendamos o uso do <strong>Vade Mecum</strong>. Simulados padrão <strong>FGV</strong>.</p>
     </div>
 
     <div class="grid-temas">
-        <a href="tema1.html" class="tema-card"><div><span class="badge">Tema 01</span><h3>CPI e Poder de Investigação</h3></div></a>
-        <a href="tema2.html" class="tema-card"><div><span class="badge">Tema 02</span><h3>Sistemas Eleitorais e Mandatos</h3></div></a>
-        <a href="tema3.html" class="tema-card"><div><span class="badge">Tema 03</span><h3>Funções Típicas e Atípicas</h3></div></a>
-        <a href="tema4.html" class="tema-card"><div><span class="badge">Tema 04</span><h3>Processo Legislativo: Emendas</h3></div></a>
-        <a href="tema5.html" class="tema-card"><div><span class="badge">Tema 05</span><h3>Controle de Constitucionalidade</h3></div></a>
-        <a href="tema6.html" class="tema-card"><div><span class="badge">Tema 06</span><h3>Direitos e Garantias Fundamentais</h3></div></a>
-        <a href="tema7.html" class="tema-card"><div><span class="badge">Tema 07</span><h3>Remédios Constitucionais</h3></div></a>
-        <a href="tema8.html" class="tema-card"><div><span class="badge">Tema 08</span><h3>Organização do Estado</h3></div></a>
-        <a href="tema9.html" class="tema-card"><div><span class="badge">Tema 09</span><h3>Poder Executivo e Crimes de Resp.</h3></div></a>
-        <a href="tema10.html" class="tema-card"><div><span class="badge">Tema 10</span><h3>Poder Judiciário e CNJ</h3></div></a>
-        <a href="tema11.html" class="tema-card"><div><span class="badge">Tema 11</span><h3>Administração Pública (Art. 37)</h3></div></a>
-        <a href="tema12.html" class="tema-card"><div><span class="badge">Tema 12</span><h3>Defesa do Estado e Inst. Democráticas</h3></div></a>
-        <a href="tema13.html" class="tema-card"><div><span class="badge">Tema 13</span><h3>Ordem Social e Tributária</h3></div></a>
+        <a href="cpi_investigacao.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>CPI e Investigação</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="funcoes_poderes_atipicas.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Funções Típicas e Atípicas</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="sistemas_eleitorais_mandatos.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Sistemas Eleitorais</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="bicameralismo_sistemas.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Bicameralismo</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="organizacao_congresso.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Organização do Congresso</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="quorum_votacoes.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Quórum e Votações</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="legislativo_estadual_municipal.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Legislativo Estadual/Mun.</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="cpi_limites_direitos.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>CPI: Limites e Direitos</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
     </div>
 </main>
 
 <footer>
-    &copy; 2026 ESTUDAFLIX - Wallace Cavalcante.
+    &copy; 2026 ESTUDAFLIX - Wallace Cavalcante
 </footer>
 
 </body>
