@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: CPI e Investigação - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover { filter: brightness(1.1); }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            min-height: 50px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 1rem; }
+            .option-btn { font-size: 0.9rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← INÍCIO</a>
+    </div>
+    <h1 style="margin-top:10px;">CPI e Investigação</h1>
+    <p style="font-size: 0.8rem; opacity: 0.9;">Poderes Legislativos de Inquérito</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Carregando...</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="margin-top:20px;" onclick="location.reload()">Refazer</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Durante investigação parlamentar acerca de irregularidades em contratos públicos, um grupo de deputados federais requereu a criação de Comissão Parlamentar de Inquérito para apuração dos fatos. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) A criação de CPI depende exclusivamente de autorização do Presidente da República.", "B) A CPI somente pode ser instaurada mediante aprovação da maioria absoluta dos membros da Casa Legislativa.", "C) A Constituição assegura a criação de CPI mediante requerimento de um terço dos membros da Casa.", "D) A CPI possui natureza jurisdicional e integra o Poder Judiciário."],
+            cor: "C",
+            fund: "Art. 58, §3º, da Constituição Federal de 1988[cite: 147].",
+            com: "A CPI é criada mediante requerimento de um terço dos membros da Câmara dos Deputados ou do Senado Federal, para apuração de fato determinado e por prazo certo[cite: 148]."
+        },
+        {
+            p: "Em determinada Comissão Parlamentar de Inquérito, investigados foram convocados para prestar esclarecimentos sobre suposto esquema de corrupção envolvendo agentes públicos. À luz da ordem constitucional brasileira, assinale a afirmativa correta.",
+            opts: ["A) A CPI não pode ouvir investigados, pois essa atribuição é exclusiva do Poder Judiciário.", "B) A CPI possui poderes de investigação próprios das autoridades judiciais.", "C) Oitiva de investigados somente pode ocorrer mediante autorização judicial prévia.", "D) A CPI pode decretar condenações penais após o encerramento das investigações."],
+            cor: "B",
+            fund: "Art. 58, §3º, da Constituição Federal de 1988[cite: 158].",
+            com: "As CPIs possuem poderes de investigação próprios das autoridades judiciais, podendo convocar investigados e testemunhas para depoimento[cite: 159]."
+        },
+        {
+            p: "Durante funcionamento de uma CPI no Senado Federal, surgiu discussão acerca dos requisitos constitucionais necessários para sua instalação. Assinale a afirmativa correta.",
+            opts: ["A) A CPI pode ser instaurada para investigação genérica e prazo indeterminado.", "B) A instalação da CPI exige fato determinado e prazo certo.", "C) A CPI depende de autorização do Supremo Tribunal Federal para funcionamento.", "D) O requerimento de CPI deve ser aprovado pela maioria simples do plenário."],
+            cor: "B",
+            fund: "Art. 58, §3º, da Constituição Federal de 1988[cite: 169].",
+            com: "A Constituição exige três requisitos para criação da CPI: requerimento de um terço dos membros, fato determinado e prazo certo[cite: 170]."
+        },
+        {
+            p: "Durante depoimento em CPI, determinada testemunha alegou possuir direito constitucional de permanecer em silêncio diante de perguntas potencialmente autoincriminatórias. Considerando a jurisprudência consolidada do Supremo Tribunal Federal, assinale a afirmativa correta.",
+            opts: ["A) O direito ao silêncio não se aplica às CPIs.", "B) Testemunhas em CPI podem recusar-se integralmente a comparecer.", "C) O direito à não autoincriminação também pode ser invocado perante CPI.", "D) A CPI pode impor sanção penal imediata em caso de silêncio do depoente."],
+            cor: "C",
+            fund: "Art. 5º, LXIII, e art. 58, §3º, da Constituição Federal[cite: 180].",
+            com: "O STF reconhece a aplicação do direito ao silêncio e da garantia contra autoincriminação também no âmbito das CPIs[cite: 181]."
+        },
+        {
+            p: "Durante sessão deliberativa de Comissão Parlamentar de Inquérito, discutia-se o quórum necessário para aprovação de requerimentos investigatórios internos. À luz da sistemática constitucional brasileira, assinale a afirmativa correta.",
+            opts: ["A) Todas as deliberações em CPI exigem unanimidade dos membros presentes.", "B) As decisões da CPI observam, como regra, a maioria dos votos dos presentes.", "C) A CPI somente pode deliberar mediante aprovação de dois terços dos integrantes.", "D) O presidente da CPI possui competência exclusiva para determinar diligências investigatórias."],
+            cor: "B",
+            fund: "Art. 47 e art. 58, §3º, da Constituição Federal[cite: 191].",
+            com: "As deliberações parlamentares, inclusive em CPIs, observam a regra geral da maioria simples dos presentes[cite: 192]."
+        },
+        {
+            p: "Determinada CPI instaurada na Câmara dos Deputados pretendia decretar prisão preventiva de investigado sob fundamento de garantia da ordem pública. Considerando os limites constitucionais das CPIs, assinale a afirmativa correta.",
+            opts: ["A) A CPI possui competência jurisdicional plena para decretar prisão preventiva.", "B) A CPI pode determinar qualquer modalidade de prisão cautelar.", "C) A CPI somente pode determinar prisão em flagrante delito.", "D) A CPI possui competência para aplicar penas privativas de liberdade."],
+            cor: "C",
+            fund: "Art. 58, §3º, e art. 5º, LXI, da Constituição Federal[cite: 202].",
+            com: "A CPI não possui poderes jurisdicionais para decretar prisões cautelares, admitindo-se apenas prisão em flagrante delito[cite: 203]."
+        },
+        {
+            p: "Durante investigação parlamentar sobre fraudes em contratos administrativos, uma CPI determinou a convocação de determinada autoridade pública federal para prestar esclarecimentos. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) As CPIs possuem poderes investigatórios equivalentes aos do Ministério Público.", "B) A CPI não pode convocar testemunhas ou investigados.", "C) A CPI possui poderes de investigação próprios das autoridades judiciais, nos limites constitucionais.", "D) A CPI pode promover diretamente ação penal pública ao final das investigações."],
+            cor: "C",
+            fund: "Art. 58, §3º, da Constituição Federal de 1988[cite: 213].",
+            com: "As CPIs possuem poderes investigatórios semelhantes aos das autoridades judiciais, mas não substituem funções jurisdicionais ou ministeriais[cite: 214]."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedLetter = null;
+    let isAnswered = false;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selectedLetter = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            html += `<button class="option-btn" onclick="selectOption('${letter}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOption(letter, btn) {
+        if (isAnswered) return;
+        selectedLetter = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if (!selectedLetter) return alert("Selecione uma alternativa.");
+        if (!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if (selectedLetter === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = `<strong>✔ CORRETO!</strong><br><small>${q.fund}</small><br>${q.com}`;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = `<strong>✘ INCORRETO.</strong> Gabarito: ${q.cor}.<br><small>${q.fund}</small>`;
+            }
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima";
+        } else {
+            currentIndex++;
+            if (currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+            }
+        }
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

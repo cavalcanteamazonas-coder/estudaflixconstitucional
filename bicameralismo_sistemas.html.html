@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Bicameralismo e Sistemas Eleitorais</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --accent: #e67e22;
+            --bg: #f4f4f9;
+            --white: #ffffff;
+            --text: #2e4053;
+            --success: #28b463;
+            --error: #cb4335;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 10px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: #d5d8dc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 850px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 2px solid #eaeeef;
+            padding: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fef9f5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #ebf5fb;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            border-left: 6px solid transparent;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left-color: var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left-color: var(--error); }
+
+        .btn-action {
+            margin-top: 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            float: right;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 4rem; font-weight: 800; color: var(--primary); margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← PÁGINA INICIAL</a></div>
+    <h1>Bicameralismo e Sistemas Eleitorais</h1>
+    <p>Organização do Congresso Nacional e Regras de Eleição</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Concluído</h2>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="float:none; margin-top:30px;" onclick="location.reload()">Reiniciar</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Qual é a base da representação política no sistema bicameral brasileiro?",
+            opts: ["A) Câmara e Senado representam o povo proporcionalmente.", "B) A Câmara representa o povo e o Senado representa os Estados e o DF.", "C) O Senado representa os Municípios e a Câmara os Estados.", "D) Ambas representam os partidos conforme o quociente eleitoral."],
+            cor: "B",
+            com: "Art. 45 e 46 da CF. A Câmara é o povo (proporcional); o Senado é o ente federado (paritário)."
+        },
+        {
+            p: "O sistema proporcional de votos é aplicado na eleição de qual cargo?",
+            opts: ["A) Senador.", "B) Presidente da República.", "C) Deputado Federal.", "D) Governador."],
+            cor: "C",
+            com: "Deputados (Federais e Estaduais) e Vereadores seguem o sistema proporcional (votos no partido/federação)."
+        },
+        {
+            p: "Como funciona a estrutura legislativa do Distrito Federal?",
+            opts: ["A) É bicameral (Câmara Distrital e Senado Distrital).", "B) É unicameral, exercida pela Câmara Legislativa.", "C) Segue o modelo dos Municípios, mas com dois turnos.", "D) Não possui poder legislativo próprio."],
+            cor: "B",
+            com: "Art. 32 da CF. O DF possui uma Câmara Legislativa unicameral que acumula competências estaduais e municipais."
+        },
+        {
+            p: "Sobre o número de Senadores por Estado, a Constituição define que:",
+            opts: ["A) É proporcional à população de cada unidade.", "B) Cada Estado elege 2 senadores.", "C) É fixo: 3 senadores para cada Estado e para o DF.", "D) Varia conforme o número de municípios do Estado."],
+            cor: "C",
+            com: "O Senado preza pela igualdade federativa, garantindo 3 cadeiras para cada ente, totalizando 81 senadores."
+        },
+        {
+            p: "O sistema unicameral é a regra para quais entes federados?",
+            opts: ["A) Estados e Municípios.", "B) Apenas para a União.", "C) Apenas para os Municípios e Distrito Federal.", "D) Estados, Municípios e Distrito Federal."],
+            cor: "D",
+            com: "No Brasil, apenas a União (Congresso Nacional) é bicameral. Estados (Assembleias), DF e Municípios são unicamerais."
+        },
+        {
+            p: "Qual sistema é utilizado para eleger Senadores?",
+            opts: ["A) Majoritário.", "B) Proporcional de lista fechada.", "C) Distrital puro.", "D) Misto."],
+            cor: "A",
+            com: "Senadores são eleitos pelo sistema majoritário: vence quem recebe mais votos na circunscrição estadual."
+        },
+        {
+            p: "O Princípio da Anterioridade Eleitoral exige que uma mudança nas regras ocorra quanto tempo antes do pleito?",
+            opts: ["A) Pelo menos 6 meses.", "B) Pelo menos 1 ano.", "C) Até o final do primeiro semestre do ano eleitoral.", "D) Não há prazo, desde que aprovado pelo TSE."],
+            cor: "B",
+            com: "Art. 16 da CF. A lei que altera o processo eleitoral só se aplica à eleição que ocorra após um ano da sua vigência."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Selecione uma alternativa.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Exato!</strong> " + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Não foi desta vez.</strong> O gabarito é " + q.cor + ". " + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+                document.getElementById('performance-msg').innerText = score >= 5 ? "Ótimo domínio do sistema legislativo!" : "Continue a revisar as bases do bicameralismo.";
+            }
+        }
+    }
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

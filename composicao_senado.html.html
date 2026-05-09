@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Composição do Senado Federal - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1e3a5a; /* Azul Marinho Institucional */
+            --accent: #d4af37;  /* Dourado */
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 10px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #95a5a6;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fcf9f0;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 6px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 6px solid var(--error); }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 25px;
+        }
+
+        #result-screen { display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← PÁGINA INICIAL</a></div>
+    <h1>O Senado Federal na CF/88</h1>
+    <p>Representação Federativa e Sistema Majoritário</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 5</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado</h2>
+        <p id="score-text" style="font-size: 2.5rem; margin: 20px 0; color: var(--primary); font-weight: bold;"></p>
+        <button class="btn-action" style="float:none;" onclick="location.reload()">Refazer Simulado</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Sobre a composição do Senado Federal, assinale a alternativa que reflete o pacto federativo brasileiro:",
+            opts: ["A) O número de senadores varia de acordo com a população de cada Estado.", "B) Cada Estado e o Distrito Federal elegem três senadores, com mandato de oito anos.", "C) Os Municípios possuem representação direta no Senado.", "D) O total de senadores é de 513 membros."],
+            cor: "B",
+            com: "Art. 46, caput e §1º da CF. O Senado representa os entes federados (Estados e DF) de forma igualitária, com 3 representantes para cada."
+        },
+        {
+            p: "Qual é o sistema eleitoral adotado para a escolha dos membros do Senado Federal?",
+            opts: ["A) Sistema Proporcional de lista aberta.", "B) Sistema Misto (distrital e proporcional).", "C) Sistema Majoritário.", "D) Sistema de Quociente Eleitoral."],
+            cor: "C",
+            com: "Diferente da Câmara, o Senado utiliza o sistema majoritário, onde vence o candidato mais votado (ou os dois mais votados, conforme a renovação)."
+        },
+        {
+            p: "A renovação da composição do Senado Federal ocorre de forma:",
+            opts: ["A) Integral a cada quatro anos.", "B) Parcial e alternada, por um e dois terços, a cada quatro anos.", "C) Integral a cada oito anos.", "D) Parcial, sempre por metade das cadeiras em cada eleição."],
+            cor: "B",
+            com: "Art. 46, §2º da CF. A cada eleição geral (4 anos), renova-se ora 1/3 (1 senador por estado), ora 2/3 (2 senadores por estado)."
+        },
+        {
+            p: "O Distrito Federal possui representação no Senado Federal?",
+            opts: ["A) Não, o DF é representado apenas pela Câmara Legislativa.", "B) Sim, mas possui apenas um senador por ser território federal.", "C) Sim, possui representação igualitária com os Estados (3 senadores).", "D) Sim, mas seus senadores não possuem direito a voto em matérias orçamentárias."],
+            cor: "C",
+            com: "O DF é equiparado aos Estados na representação do Senado, elegendo também 3 senadores."
+        },
+        {
+            p: "Considerando que o Brasil possui 26 Estados e 1 Distrito Federal, qual o número total de Senadores da República?",
+            opts: ["A) 513 senadores.", "B) 81 senadores.", "C) 100 senadores.", "D) 27 senadores."],
+            cor: "B",
+            com: "Cálculo: 27 entes federados x 3 senadores cada = 81 membros no total."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Por favor, selecione uma opção.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Correto!</strong><br>" + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Incorreto.</strong> O gabarito é a letra " + q.cor + ".<br>" + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima Questão";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('score-text').innerText = `${score} / ${questions.length} Acertos`;
+            }
+        }
+    }
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

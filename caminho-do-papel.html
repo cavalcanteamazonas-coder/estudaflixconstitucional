@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Caminho do Papel - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover {
+            filter: brightness(1.1);
+        }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            min-height: 50px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.4rem; }
+            .question-text { font-size: 1.05rem; }
+            .option-btn { font-size: 0.95rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← PÁGINA INICIAL</a>
+    </div>
+    <h1 style="margin-top:10px;">Caminho do Papel</h1>
+    <p style="font-size: 0.9rem; opacity: 0.9;">Processo Legislativo Ordinário</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content">
+            </div>
+        <div id="feedback-box" class="feedback"></div>
+        
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <p>Seu desempenho no tema "Caminho do Papel":</p>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="margin-top:20px;" onclick="location.reload()">Refazer Simulado</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Determinado projeto de lei ordinária de iniciativa parlamentar começou sua tramitação na Câmara dos Deputados, sendo posteriormente encaminhado ao Senado Federal para revisão. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: [
+                "A) O Senado Federal atua como Casa iniciadora em todos os projetos de lei ordinária.",
+                "B) A Câmara dos Deputados pode atuar como Casa iniciadora no processo legislativo ordinário.",
+                "C) O projeto de lei aprovado pela Câmara é encaminhado diretamente ao Supremo Tribunal Federal.",
+                "D) O Senado Federal possui competência apenas consultiva no processo legislativo."
+            ],
+            cor: "B",
+            fund: "Arts. 61 e 65 da Constituição Federal de 1988.",
+            com: "No processo legislativo ordinário, o projeto pode iniciar tramitação na Câmara dos Deputados ou no Senado Federal, conforme a hipótese constitucional."
+        },
+        {
+            p: "Após aprovação de projeto de lei pela Casa iniciadora, o texto foi encaminhado ao Senado Federal, que promoveu alterações substanciais na proposição original. Considerando a sistemática constitucional do processo legislativo ordinário, assinale a afirmativa correta.",
+            opts: [
+                "A) O Senado Federal não pode modificar projeto aprovado pela Câmara dos Deputados.",
+                "B) As emendas aprovadas pela Casa revisora retornam à Casa iniciadora para apreciação.",
+                "C) O projeto deve ser encaminhado diretamente para sanção presidencial após revisão.",
+                "D) A Casa revisora possui competência apenas para aprovar ou rejeitar integralmente o projeto."
+            ],
+            cor: "B",
+            fund: "Art. 65, parágrafo único, da Constituição Federal de 1988.",
+            com: "Quando a Casa revisora modifica o projeto, as emendas retornam à Casa iniciadora para deliberação."
+        },
+        {
+            p: "Concluída a fase parlamentar do processo legislativo, determinado projeto de lei foi encaminhado ao Presidente da República para apreciação. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: [
+                "A) O Presidente da República possui competência para sancionar ou vetar o projeto de lei.",
+                "B) O Presidente da República somente pode vetar parcialmente emendas constitucionais.",
+                "C) O veto presidencial depende de autorização prévia do Supremo Tribunal Federal.",
+                "D) O Presidente da República não participa do processo legislativo ordinário."
+            ],
+            cor: "A",
+            fund: "Art. 66 da Constituição Federal de 1988.",
+            com: "Encerrada a fase legislativa parlamentar, o projeto segue ao Presidente da República, que poderá sancionar ou vetar total ou parcialmente a proposição."
+        },
+        {
+            p: "Determinada lei aprovada pelo Congresso Nacional foi integralmente sancionada pelo Presidente da República, seguindo posteriormente para promulgação e publicação. Sobre essas etapas finais do processo legislativo, assinale a afirmativa correta.",
+            opts: [
+                "A) A promulgação atesta a existência válida da lei e sua executoriedade.",
+                "B) A publicação possui natureza meramente simbólica e não interfere na eficácia normativa.",
+                "C) A promulgação compete exclusivamente ao Poder Judiciário.",
+                "D) A publicação da lei substitui a necessidade de sanção presidencial."
+            ],
+            cor: "A",
+            fund: "Art. 66, §7º, da Constituição Federal de 1988.",
+            com: "A promulgação certifica a existência da norma jurídica válida e determina sua executoriedade, enquanto a publicação garante conhecimento oficial da lei."
+        },
+        {
+            p: "Durante o processo legislativo ordinário, determinado projeto foi rejeitado pela Casa revisora. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: [
+                "A) O projeto rejeitado pela Casa revisora será automaticamente promulgado.",
+                "B) A rejeição pela Casa revisora encerra o processo legislativo da proposição.",
+                "C) O Presidente da República poderá impor continuidade obrigatória da tramitação.",
+                "D) O Supremo Tribunal Federal decidirá sobre a continuidade do projeto rejeitado."
+            ],
+            cor: "B",
+            fund: "Art. 65 da Constituição Federal de 1988.",
+            com: "Se a Casa revisora rejeitar integralmente o projeto, a proposição legislativa é arquivada, encerrando-se o processo legislativo."
+        },
+        {
+            p: "Determinada proposição legislativa foi aprovada sem alterações pelo Senado Federal, após regular tramitação iniciada na Câmara dos Deputados. Considerando o procedimento legislativo constitucional, assinale a afirmativa correta.",
+            opts: [
+                "A) O projeto deverá retornar obrigatoriamente à Câmara dos Deputados.",
+                "B) O projeto seguirá ao Presidente da República para sanção ou veto.",
+                "C) O Senado Federal realizará a promulgação da norma aprovada.",
+                "D) O projeto será automaticamente convertido em emenda constitucional."
+            ],
+            cor: "B",
+            fund: "Arts. 65 e 66 da Constituição Federal de 1988.",
+            com: "Quando aprovado sem emendas pela Casa revisora, o projeto segue diretamente ao Presidente da República."
+        },
+        {
+            p: "Após veto parcial do Presidente da República a determinado projeto de lei, parlamentares discutiram a continuidade do processo legislativo. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: [
+                "A) O veto presidencial encerra definitivamente o processo legislativo.",
+                "B) O veto presidencial será apreciado pelo Congresso Nacional.",
+                "C) O veto presidencial impede qualquer reapreciação parlamentar.",
+                "D) O veto parcial converte automaticamente o restante do projeto em medida provisória."
+            ],
+            cor: "B",
+            fund: "Art. 66, §§4º e 6º, da Constituição Federal de 1988.",
+            com: "O veto presidencial possui natureza política e jurídica, devendo ser submetido à apreciação do Congresso Nacional em sessão conjunta."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedLetter = null;
+    let isAnswered = false;
+
+    function initQuiz() {
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selectedLetter = null;
+        
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+
+        let html = `<div class="question-text">${q.p}</div>`;
+        html += `<div class="options-container">`;
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            html += `<button class="option-btn" onclick="selectOption('${letter}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOption(letter, btn) {
+        if (isAnswered) return;
+        selectedLetter = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if (!selectedLetter) {
+            alert("Por favor, selecione uma alternativa.");
+            return;
+        }
+
+        if (!isAnswered) {
+            validateAnswer();
+        } else {
+            nextQuestion();
+        }
+    }
+
+    function validateAnswer() {
+        isAnswered = true;
+        const q = questions[currentIndex];
+        const fb = document.getElementById('feedback-box');
+        fb.style.display = 'block';
+
+        if (selectedLetter === q.cor) {
+            score++;
+            fb.className = "feedback correct";
+            fb.innerHTML = `<strong>✔ CORRETO!</strong><br><small>Fundamentação: ${q.fund}</small><br>${q.com}`;
+        } else {
+            fb.className = "feedback wrong";
+            fb.innerHTML = `<strong>✘ INCORRETO.</strong> O gabarito é ${q.cor}.<br><small>Fundamentação: ${q.fund}</small>`;
+        }
+
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+        document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado Final" : "Próxima Questão";
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+        
+        const percent = (score / questions.length) * 100;
+        let msg = "";
+        if (percent >= 70) msg = "Excelente desempenho! Você domina o Caminho do Papel.";
+        else if (percent >= 50) msg = "Bom desempenho. Revise os pontos onde houve dúvida.";
+        else msg = "Recomendamos uma nova leitura da Constituição sobre o Processo Legislativo.";
+        
+        document.getElementById('performance-msg').innerText = msg;
+    }
+
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>

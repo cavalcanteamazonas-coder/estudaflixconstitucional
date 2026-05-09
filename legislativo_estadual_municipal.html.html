@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Legislativo Estadual e Municipal - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover { filter: brightness(1.1); }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            min-height: 50px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 1rem; }
+            .option-btn { font-size: 0.9rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← PÁGINA INICIAL</a>
+    </div>
+    <h1 style="margin-top:10px;">Legislativo Estadual e Municipal</h1>
+    <p style="font-size: 0.8rem; opacity: 0.9;">Regras de Composição e Funcionamento</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Carregando simulado...</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="margin-top:20px;" onclick="location.reload()">Tentar Novamente</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Durante sessão de estudos sobre organização do Poder Legislativo estadual, um candidato à OAB afirmou que o número de deputados estaduais é livremente definido pelas Constituições estaduais. À luz da Constituição Federal, assinale a correta.",
+            opts: ["A) Os Estados possuem liberdade absoluta para definir o número de deputados estaduais.", "B) O número de deputados estaduais será correspondente ao triplo da representação do Estado na Câmara dos Deputados, até o limite de trinta e seis, acrescido do que exceder de doze.", "C) O número de deputados estaduais é fixado diretamente pelo Senado Federal.", "D) Os Estados somente podem alterar o número de deputados estaduais mediante lei complementar federal."],
+            cor: "B",
+            fund: "Art. 27 da CF/88.",
+            com: "A Constituição vincula o número de deputados estaduais à representação do Estado na Câmara Federal através de um cálculo específico (triplo até 36, depois soma simples)."
+        },
+        {
+            p: "Em determinado Município, vereadores defenderam aumento do número de cadeiras na Câmara Municipal sob o argumento de crescimento populacional. Assinale a afirmativa correta.",
+            opts: ["A) O número de vereadores é livremente definido pela Lei Orgânica municipal.", "B) O número de vereadores depende exclusivamente da arrecadação tributária municipal.", "C) A Constituição estabelece limites máximos de vereadores conforme a população do Município.", "D) Municípios com mais de um milhão de habitantes devem adotar sistema bicameral."],
+            cor: "C",
+            fund: "Art. 29, IV, da CF/88.",
+            com: "O número de vereadores é proporcional à população, respeitando faixas de limites máximos previstas na CF."
+        },
+        {
+            p: "Durante palestra sobre eleições legislativas, explicou-se que vereadores e deputados estaduais são escolhidos mediante sistema proporcional. À luz da legislação, assinale a correta.",
+            opts: ["A) Vereadores são eleitos pelo sistema majoritário simples.", "B) Deputados estaduais e vereadores são eleitos pelo sistema proporcional.", "C) O sistema proporcional aplica-se apenas às eleições estaduais.", "D) O voto de legenda é proibido nas eleições municipais."],
+            cor: "B",
+            fund: "Arts. 27 e 29 da CF/88.",
+            com: "O sistema proporcional busca representar a força dos partidos e coligações, sendo usado para Câmaras Municipais e Assembleias Legislativas."
+        },
+        {
+            p: "Em debate acadêmico, discutiu-se a duração dos mandatos eletivos no Poder Legislativo estadual e municipal. Assinale a afirmativa correta.",
+            opts: ["A) Deputados estaduais possuem mandato de oito anos.", "B) Vereadores exercem mandato de quatro anos.", "C) Vereadores e deputados estaduais possuem mandatos distintos em razão da autonomia federativa.", "D) O prazo do mandato dos vereadores pode ser definido pela Lei Orgânica municipal."],
+            cor: "B",
+            fund: "Arts. 27 e 29 da CF/88.",
+            com: "Tanto no nível estadual quanto no municipal, o mandato eletivo legislativo tem a duração de 4 anos."
+        },
+        {
+            p: "Determinada Constituição estadual permitiu número de deputados estaduais superior ao limite previsto pela Constituição Federal. Considerando a ordem constitucional, assinale a correta.",
+            opts: ["A) A norma estadual é válida em razão da autonomia federativa.", "B) A definição do número de deputados estaduais compete privativamente à Assembleia Legislativa.", "C) Os limites constitucionais federais vinculam obrigatoriamente os Estados-membros.", "D) A Constituição Federal não estabelece critérios quantitativos para deputados estaduais."],
+            cor: "C",
+            fund: "Art. 27 da CF/88.",
+            com: "A autonomia dos Estados não é soberania; eles devem seguir rigorosamente os limites quantitativos impostos pela Constituição Federal."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedLetter = null;
+    let isAnswered = false;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selectedLetter = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            html += `<button class="option-btn" onclick="selectOption('${letter}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOption(letter, btn) {
+        if (isAnswered) return;
+        selectedLetter = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if (!selectedLetter) return alert("Por favor, selecione uma opção.");
+        if (!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if (selectedLetter === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = `<strong>✔ CORRETO!</strong><br><small>Fundamentação: ${q.fund}</small><br>${q.com}`;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = `<strong>✘ INCORRETO.</strong> O gabarito correto é ${q.cor}.<br><small>Fundamentação: ${q.fund}</small>`;
+            }
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado Final" : "Próxima Questão";
+        } else {
+            currentIndex++;
+            if (currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+                const perc = (score / questions.length) * 100;
+                document.getElementById('performance-msg').innerText = perc >= 60 ? "Parabéns! Excelente domínio da base federativa." : "Continue estudando as regras de simetria constitucional.";
+            }
+        }
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

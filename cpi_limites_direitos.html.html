@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: CPI e Direitos Fundamentais</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #c0392b;
+            --bg: #f9f9f9;
+            --white: #ffffff;
+            --text: #333;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 10px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-info {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover { background-color: #f0f0f0; }
+        .option-btn.selected { border-color: var(--accent); background-color: #fdf2f2; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; }
+        .wrong { background-color: #f8d7da; color: #721c24; }
+
+        .btn-action {
+            margin-top: 25px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        #result-screen { display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← Voltar</a></div>
+    <h1>CPI e Direitos Fundamentais</h1>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Concluído</h2>
+        <p id="score-text" style="font-size: 2rem; margin: 20px 0;"></p>
+        <button class="btn-action" style="float:none;" onclick="location.reload()">Reiniciar</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Pode uma CPI decretar a prisão preventiva de um investigado?",
+            opts: ["A) Sim, possui poderes judiciais.", "B) Não, a prisão preventiva depende de ordem judicial.", "C) Sim, apenas por maioria absoluta.", "D) Apenas se houver flagrante de crime inafiançável."],
+            cor: "B",
+            com: "A CPI não tem função jurisdicional. Prisões cautelares são reserva de jurisdição (exclusivo do juiz)."
+        },
+        {
+            p: "Sobre o direito ao silêncio perante uma CPI:",
+            opts: ["A) Não se aplica ao legislativo.", "B) Só vale para réus presos.", "C) É um direito constitucional de não produzir prova contra si mesmo.", "D) Configura crime de desobediência."],
+            cor: "C",
+            com: "O princípio 'nemo tenetur se detegere' protege o depoente contra perguntas autoincriminatórias."
+        },
+        {
+            p: "A interceptação telefônica pode ser determinada diretamente pela CPI?",
+            opts: ["A) Sim, em casos de urgência.", "B) Não, depende de autorização judicial.", "C) Sim, se aprovado pela Mesa Diretora.", "D) Sim, por ser poder de investigação judicial."],
+            cor: "B",
+            com: "Art. 5º, XII da CF exige ordem judicial para interceptação das comunicações telefônicas."
+        },
+        {
+            p: "Qual sigilo a CPI PODE quebrar por decisão própria fundamentada?",
+            opts: ["A) Domiciliar.", "B) Interceptação telefônica.", "C) Bancário e Fiscal.", "D) Correspondência lacrada."],
+            cor: "C",
+            com: "O STF entende que CPIs podem quebrar sigilo bancário, fiscal e de dados telefônicos (registros), mas não a escuta."
+        },
+        {
+            p: "A CPI pode realizar busca e apreensão em domicílio sem ordem judicial?",
+            opts: ["A) Sim, durante o dia.", "B) Sim, com auxílio policial.", "C) Não, a casa é asilo inviolável.", "D) Apenas se houver crime organizado."],
+            cor: "C",
+            com: "Busca domiciliar é reserva de jurisdição. A CPI não pode ordenar entrada forçada em residências."
+        },
+        {
+            p: "O relatório final de uma CPI serve para:",
+            opts: ["A) Condenar os culpados.", "B) Aplicar multas administrativas.", "C) Encaminhar ao Ministério Público para promover a responsabilidade civil/criminal.", "D) Prender preventivamente os indiciados."],
+            cor: "C",
+            com: "A CPI investiga e conclui. A punição depende da ação do MP e do julgamento do Judiciário."
+        },
+        {
+            p: "CPIs são criadas mediante requerimento de quantos membros?",
+            opts: ["A) Maioria simples.", "B) Um terço dos membros da Casa.", "C) Maioria absoluta.", "D) Dois terços dos membros."],
+            cor: "B",
+            com: "Art. 58, §3º da CF exige o requerimento de 1/3 dos membros da Câmara ou do Senado."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Selecione uma opção.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Correto!</strong> " + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Incorreto.</strong> O gabarito é " + q.cor + ". " + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Pontuação" : "Próxima";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('score-text').innerText = `${score} de ${questions.length} acertos`;
+            }
+        }
+    }
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

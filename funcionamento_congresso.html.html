@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Funcionamento do Congresso - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover { filter: brightness(1.1); }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            min-height: 50px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 1rem; }
+            .option-btn { font-size: 0.9rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← PÁGINA INICIAL</a>
+    </div>
+    <h1 style="margin-top:10px;">Funcionamento do Congresso</h1>
+    <p style="font-size: 0.8rem; opacity: 0.9;">Sessões, Recessos e Calendário Legislativo</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Carregando questões...</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="margin-top:20px;" onclick="location.reload()">Refazer Simulado</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Durante debate acadêmico sobre funcionamento do Congresso Nacional, determinado estudante afirmou que a sessão legislativa ordinária possui duração livremente definida pelas Mesas da Câmara dos Deputados e do Senado Federal. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) A sessão legislativa ordinária ocorre independentemente de calendário constitucional previamente fixado.", "B) O Congresso Nacional reúne-se anualmente na Capital Federal de 2 de fevereiro a 17 de julho e de 1º de agosto a 22 de dezembro.", "C) A sessão legislativa ordinária inicia-se em janeiro e encerra-se em dezembro sem interrupções.", "D) O calendário legislativo é definido por decreto legislativo aprovado anualmente."],
+            cor: "B",
+            fund: "Art. 57, caput, da CF/88.",
+            com: "A Constituição estabelece os períodos exatos de funcionamento. Recessos parlamentares ocorrem entre julho e agosto, e dezembro e fevereiro."
+        },
+        {
+            p: "Após as eleições gerais, deputados e senadores recém-eleitos reuniram-se para escolha das respectivas Mesas Diretoras antes do início dos trabalhos legislativos ordinários. Sobre a hipótese apresentada, assinale a afirmativa correta.",
+            opts: ["A) Trata-se de sessão legislativa extraordinária.", "B) Trata-se de sessão conjunta do Congresso Nacional.", "C) Trata-se de sessão preparatória destinada à posse e eleição das Mesas.", "D) Trata-se de sessão deliberativa ordinária prevista no art. 44 da Constituição."],
+            cor: "C",
+            fund: "Art. 57, §4º, da CF/88.",
+            com: "Sessões preparatórias ocorrem no primeiro ano da legislatura para posse de membros e eleição de cargos internos."
+        },
+        {
+            p: "Durante o recesso parlamentar, o Presidente da República solicitou apreciação urgente de matéria relevante relacionada à segurança nacional, ocasionando convocação do Congresso Nacional. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) O Congresso Nacional não pode reunir-se durante o recesso parlamentar.", "B) A convocação extraordinária autoriza apreciação de qualquer matéria legislativa pendente.", "C) Na sessão legislativa extraordinária, o Congresso somente deliberará sobre a matéria objeto da convocação.", "D) A convocação extraordinária depende exclusivamente de autorização do Supremo Tribunal Federal."],
+            cor: "C",
+            fund: "Art. 57, §8º, da CF/88.",
+            com: "A convocação extraordinária restringe a pauta legislativa aos assuntos específicos que motivaram a convocação."
+        },
+        {
+            p: "Em sessão realizada no Congresso Nacional, deputados federais e senadores reuniram-se conjuntamente para apreciação de vetos presidenciais. Considerando a ordem constitucional brasileira, assinale a afirmativa correta.",
+            opts: ["A) A sessão conjunta substitui integralmente as deliberações separadas da Câmara e do Senado.", "B) Sessões conjuntas somente podem ocorrer em hipóteses de estado de defesa.", "C) O Congresso Nacional pode reunir-se em sessão conjunta nos casos previstos constitucionalmente.", "D) Sessões conjuntas possuem natureza meramente cerimonial, sem função deliberativa."],
+            cor: "C",
+            fund: "Arts. 57, §3º, e 66, §4º, da CF/88.",
+            com: "Existem situações, como posse do Presidente e apreciação de vetos, em que as casas se reúnem em sessão única (conjunta)."
+        },
+        {
+            p: "Durante análise sobre o funcionamento do Poder Legislativo, um parlamentar afirmou que o Congresso Nacional não poderia interromper o recesso parlamentar sem prévia aprovação de emenda constitucional. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) O recesso parlamentar é absolutamente imutável.", "B) A convocação extraordinária do Congresso depende de emenda constitucional.", "C) O Congresso Nacional pode ser convocado extraordinariamente nas hipóteses previstas constitucionalmente.", "D) O recesso parlamentar impede qualquer atividade legislativa ou administrativa no Congresso Nacional."],
+            cor: "C",
+            fund: "Art. 57, §6º, da CF/88.",
+            com: "A convocação extraordinária permite o trabalho parlamentar durante os períodos de recesso em casos urgentes ou específicos."
+        },
+        {
+            p: "Durante sessão preparatória da Câmara dos Deputados, discutiu-se a finalidade constitucional desse ato parlamentar. Assinale a afirmativa correta.",
+            opts: ["A) A sessão preparatória destina-se exclusivamente à votação de projetos urgentes.", "B) A sessão preparatória ocorre apenas em situações de convocação extraordinária.", "C) A sessão preparatória possui finalidade organizacional e institucional do funcionamento parlamentar.", "D) A sessão preparatória substitui a sessão legislativa ordinária no primeiro ano da legislatura."],
+            cor: "C",
+            fund: "Art. 57, §4º, da CF/88.",
+            com: "As sessões preparatórias são voltadas à organização administrativa e institucional, como dar posse e eleger presidentes das casas."
+        },
+        {
+            p: "Determinada comissão parlamentar sustentou que o Congresso Nacional somente poderia iniciar o recesso parlamentar após aprovação do projeto de lei de diretrizes orçamentárias. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) O recesso parlamentar independe da apreciação da lei de diretrizes orçamentárias.", "B) O Congresso não poderá interromper a sessão legislativa sem aprovação do projeto de lei de diretrizes orçamentárias.", "C) A aprovação da lei orçamentária anual é requisito para encerramento da sessão legislativa.", "D) O recesso parlamentar depende exclusivamente de ato das Mesas da Câmara e do Senado."],
+            cor: "B",
+            fund: "Art. 57, §2º, da CF/88.",
+            com: "É um dispositivo constitucional que impede o recesso do meio do ano (em julho) se a LDO não estiver aprovada."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedLetter = null;
+    let isAnswered = false;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selectedLetter = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            html += `<button class="option-btn" onclick="selectOption('${letter}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOption(letter, btn) {
+        if (isAnswered) return;
+        selectedLetter = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if (!selectedLetter) return alert("Selecione uma alternativa.");
+        if (!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if (selectedLetter === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = `<strong>✔ CORRETO!</strong><br><small>Base Legal: ${q.fund}</small><br>${q.com}`;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = `<strong>✘ INCORRETO.</strong> Gabarito: ${q.cor}.<br><small>Base Legal: ${q.fund}</small>`;
+            }
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima";
+        } else {
+            currentIndex++;
+            if (currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+                
+                const percent = (score / questions.length) * 100;
+                let msg = percent >= 70 ? "Excelente! Você conhece bem o calendário parlamentar." : "Bom trabalho. Vale revisar as datas da sessão legislativa.";
+                document.getElementById('performance-msg').innerText = msg;
+            }
+        }
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

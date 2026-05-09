@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Espécies Normativas - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover { filter: brightness(1.1); }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            min-height: 50px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 1rem; }
+            .option-btn { font-size: 0.9rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← INÍCIO</a>
+    </div>
+    <h1 style="margin-top:10px;">Espécies e Vícios</h1>
+    <p style="font-size: 0.8rem; opacity: 0.9;">Processo Legislativo Brasileiro</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <div class="score-display" id="final-score">0/0</div>
+        <p id="performance-msg"></p>
+        <button class="btn-action" style="margin-top:20px;" onclick="location.reload()">Refazer</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Durante aula de Direito Constitucional, um professor afirmou que o Art. 59 da Constituição Federal apresenta o catálogo das espécies normativas primárias do processo legislativo brasileiro. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) O Art. 59 da Constituição prevê exclusivamente leis ordinárias e complementares.", "B) Medidas provisórias não integram o processo legislativo constitucional.", "C) Emendas constitucionais, leis complementares e decretos legislativos integram o catálogo do Art. 59 da Constituição.", "D) Resoluções legislativas possuem natureza meramente administrativa e não integram o processo legislativo."],
+            cor: "C",
+            fund: "Art. 59 da Constituição Federal de 1988.",
+            com: "O Art. 59 apresenta as espécies normativas primárias: emendas, leis complementares, ordinárias, delegadas, medidas provisórias, decretos legislativos e resoluções."
+        },
+        {
+            p: "Determinada proposta legislativa foi apresentada sem observância da iniciativa reservada constitucionalmente ao Presidente da República, embora tratasse de matéria administrativa relacionada à organização da Administração Pública federal. À luz da teoria das patologias do processo legislativo, assinale a afirmativa correta.",
+            opts: ["A) Trata-se de vício material de constitucionalidade.", "B) A irregularidade caracteriza vício formal subjetivo de iniciativa.", "C) O defeito legislativo pode ser automaticamente sanado pela sanção presidencial.", "D) O vício somente poderá ser reconhecido após trânsito em julgado de decisão judicial."],
+            cor: "B",
+            fund: "Arts. 61 e 84 da CF; jurisprudência do STF.",
+            com: "A usurpação de iniciativa reservada caracteriza vício formal subjetivo, relacionado à legitimidade para deflagração do processo."
+        },
+        {
+            p: "Durante tramitação de projeto de lei com elevado impacto financeiro, determinada comissão legislativa questionou a ausência de estimativa orçamentária e financeira exigida constitucionalmente. Considerando a ordem constitucional vigente, assinale a afirmativa correta.",
+            opts: ["A) O impacto orçamentário é irrelevante para validade do processo legislativo.", "B) A Constituição e o novo regime fiscal admitem filtros orçamentários para controle da responsabilidade fiscal legislativa.", "C) O controle de impacto financeiro compete exclusivamente ao Poder Executivo.", "D) A ausência de estimativa orçamentária constitui mero vício político sem relevância constitucional."],
+            cor: "B",
+            fund: "Arts. 113 do ADCT e 169 da CF.",
+            com: "A Constituição exige responsabilidade fiscal em proposições que criem despesas obrigatórias ou renúncia de receita."
+        },
+        {
+            p: "Determinada proposta legislativa teve sua tramitação suspensa após identificação de incompatibilidade com regras constitucionais de responsabilidade fiscal. À luz da Constituição Federal e do controle de constitucionalidade preventivo, assinale a afirmativa correta.",
+            opts: ["A) O controle preventivo de constitucionalidade pode ocorrer durante o processo legislativo.", "B) Somente o Poder Judiciário pode impedir tramitação de proposta legislativa inconstitucional.", "C) O controle preventivo é incompatível com o princípio da separação dos poderes.", "D) O processo legislativo não admite mecanismos internos de filtragem constitucional."],
+            cor: "A",
+            fund: "Arts. 58 e 66 da CF.",
+            com: "O controle preventivo ocorre no Legislativo (Comissões) e no Executivo (Veto Jurídico)."
+        },
+        {
+            p: "Durante apreciação de projeto legislativo, a Comissão de Constituição e Justiça apontou incompatibilidade formal da proposição com o devido processo legislativo constitucional. Assinale a afirmativa correta.",
+            opts: ["A) O vício formal relaciona-se ao conteúdo material da norma aprovada.", "B) O vício formal pode decorrer da inobservância de quórum constitucionalmente exigido.", "C) O vício formal somente existe em emendas constitucionais.", "D) O descumprimento de regras procedimentais não possui relevância constitucional."],
+            cor: "B",
+            fund: "Arts. 47, 60 e 69 da CF.",
+            com: "Vícios formais decorrem da inobservância das regras constitucionais, incluindo iniciativa, quórum e tramitação."
+        },
+        {
+            p: "Determinada lei foi questionada judicialmente sob alegação de incompatibilidade material com direitos fundamentais previstos na Constituição Federal. Considerando a teoria do controle de constitucionalidade, assinale a afirmativa correta.",
+            opts: ["A) O vício material relaciona-se à legitimidade do autor da proposição legislativa.", "B) O vício material decorre da incompatibilidade do conteúdo normativo com a Constituição.", "C) O vício material depende exclusivamente de defeito orçamentário.", "D) O vício material somente pode ser reconhecido no controle preventivo."],
+            cor: "B",
+            fund: "Arts. 5º e 60, §4º, da CF.",
+            com: "O vício material ocorre quando o conteúdo da norma afronta princípios, regras ou direitos constitucionais."
+        },
+        {
+            p: "Durante tramitação de projeto legislativo que criava despesa pública obrigatória, parlamentares defenderam a necessidade de observância do novo filtro fiscal constitucional relacionado ao impacto orçamentário. À luz da Constituição Federal, assinale a afirmativa correta.",
+            opts: ["A) A criação de despesa pública independe de estimativa de impacto financeiro.", "B) O controle fiscal legislativo possui fundamento constitucional relacionado à responsabilidade orçamentária.", "C) O impacto orçamentário constitui exigência exclusivamente infraconstitucional.", "D) A ausência de adequação orçamentária não produz consequências para validade da norma."],
+            cor: "B",
+            fund: "Art. 113 do ADCT; arts. 163 e 169 da CF.",
+            com: "A Constituição e o ADCT exigem adequação orçamentária nas proposições que gerem impacto financeiro."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedLetter = null;
+    let isAnswered = false;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selectedLetter = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            const letter = opt.charAt(0);
+            html += `<button class="option-btn" onclick="selectOption('${letter}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOption(letter, btn) {
+        if (isAnswered) return;
+        selectedLetter = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if (!selectedLetter) return alert("Selecione uma alternativa.");
+        if (!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if (selectedLetter === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = `<strong>✔ CORRETO!</strong><br><small>Fundamento: ${q.fund}</small><br>${q.com}`;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = `<strong>✘ INCORRETO.</strong> Gabarito: ${q.cor}.<br><small>Fundamento: ${q.fund}</small>`;
+            }
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima";
+        } else {
+            currentIndex++;
+            if (currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+            }
+        }
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

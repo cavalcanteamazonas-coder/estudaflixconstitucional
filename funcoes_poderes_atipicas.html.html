@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Funções dos Poderes - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #c0392b;
+            --bg: #f4f4f4;
+            --white: #ffffff;
+            --text: #333;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --gold: #d4af37;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 10px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 850px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 2px solid #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fdf2f2;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #ebf2f7;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .final-score { font-size: 3rem; color: var(--primary); font-weight: 800; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← PORTAL ACADÊMICO</a></div>
+    <h1>Funções Típicas e Atípicas</h1>
+    <p>Separação de Poderes e Freios e Contrapesos</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 5</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Concluído</h2>
+        <div class="final-score" id="final-score">0/0</div>
+        <p id="performance-text"></p>
+        <button class="btn-action" style="float:none; margin-top:30px;" onclick="location.reload()">Refazer</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Quando o Senado Federal processa e julga o Presidente da República por crime de responsabilidade, ele exerce qual função?",
+            opts: ["A) Função típica legislativa.", "B) Função atípica de natureza jurisdicional.", "C) Função típica administrativa.", "D) Função atípica normativa."],
+            cor: "B",
+            com: "Arts. 51 e 52 da CF. Julgar é função típica do Judiciário; quando o Senado o faz, exerce função atípica jurisdicional."
+        },
+        {
+            p: "O Presidente da República, ao editar um Decreto para regulamentar uma lei, está exercendo:",
+            opts: ["A) Função atípica normativa.", "B) Função típica jurisdicional.", "C) Função típica administrativa.", "D) Função atípica política."],
+            cor: "A",
+            com: "A função típica do Executivo é administrar. Ao criar regras (normas) via decreto, ele exerce função atípica normativa."
+        },
+        {
+            p: "O Poder Judiciário, ao realizar um concurso público para contratar novos servidores, exerce uma:",
+            opts: ["A) Função típica jurisdicional.", "B) Função atípica legislativa.", "C) Função atípica administrativa.", "D) Função típica de gestão política."],
+            cor: "C",
+            com: "A organização interna e gestão de pessoal (concursos) são atos administrativos realizados pelo Judiciário no exercício de sua função atípica."
+        },
+        {
+            p: "A iniciativa de leis que dispõem sobre a organização do Poder Judiciário compete:",
+            opts: ["A) Livremente a qualquer parlamentar.", "B) Ao Presidente da República exclusivamente.", "C) Ao próprio Poder Judiciário (autonomia).", "D) Ao Tribunal de Contas da União."],
+            cor: "C",
+            com: "Art. 96, II da CF. Isso garante a autonomia e a separação dos poderes, impedindo interferências indevidas."
+        },
+        {
+            p: "A aplicação de uma sanção disciplinar a um magistrado pelo próprio Tribunal constitui:",
+            opts: ["A) Função atípica administrativa do Judiciário.", "B) Função típica jurisdicional.", "C) Função atípica legislativa.", "D) Ato sujeito à revisão obrigatória do Poder Executivo."],
+            cor: "A",
+            com: "O controle interno e disciplinar dos membros de um Poder é matéria administrativa, não jurisdicional (não resolve lide externa)."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Por favor, selecione uma alternativa.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Correto!</strong> " + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Incorreto.</strong> O gabarito é a letra " + q.cor + ". " + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima Questão";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+        const p = (score/questions.length)*100;
+        document.getElementById('performance-text').innerText = p >= 80 ? "Parabéns! Você compreende perfeitamente a dinâmica entre os poderes." : "Bom trabalho! Continue revisando a diferença entre as funções típicas e o sistema de freios e contrapesos.";
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

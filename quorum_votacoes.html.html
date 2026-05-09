@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Quórum e Votações Legislativas</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --accent: #d4af37;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-home {
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #eaeeef;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #fffcf5;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #f0f4f8;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .footer-btns {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #result-screen { display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <a href="index.html" class="btn-home">← INÍCIO</a>
+    </div>
+    <h1 style="margin-top:10px;">Quórum e Votações</h1>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <div class="footer-btns">
+            <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado!</h2>
+        <p id="score-text" style="font-size: 2rem; margin: 20px 0;"></p>
+        <button class="btn-action" onclick="location.reload()">Refazer</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "A regra geral constitucional de deliberação legislativa corresponde a:",
+            opts: ["A) Maioria qualificada de dois terços.", "B) Maioria absoluta do total de membros.", "C) Maioria simples, observada a presença da maioria absoluta.", "D) Unanimidade dos presentes."],
+            cor: "C",
+            com: "Art. 47 da CF/88: As deliberações serão tomadas por maioria de votos, presente a maioria absoluta de seus membros."
+        },
+        {
+            p: "Qual o quórum para aprovação de Lei Complementar no Senado (81 membros)?",
+            opts: ["A) 41 votos (maioria absoluta).", "B) 54 votos (dois terços).", "C) Maioria simples dos presentes.", "D) 257 votos."],
+            cor: "A",
+            com: "Art. 69 da CF/88: As leis complementares serão aprovadas por maioria absoluta (mais da metade do total da casa)."
+        },
+        {
+            p: "Sobre a Maioria Absoluta, é correto afirmar:",
+            opts: ["A) É calculada sobre os presentes na sessão.", "B) Corresponde ao primeiro número inteiro superior à metade do total de membros.", "C) Exige três quintos dos votos.", "D) Só se aplica em caso de urgência."],
+            cor: "B",
+            com: "Diferente da maioria simples, a absoluta é um número fixo baseado no total de cadeiras da casa legislativa."
+        },
+        {
+            p: "Para aprovação de uma Emenda Constitucional (PEC), exige-se:",
+            opts: ["A) Maioria simples em turno único.", "B) Maioria absoluta em sessão conjunta.", "C) Três quintos dos membros, em dois turnos em cada Casa.", "D) Unanimidade em um turno."],
+            cor: "C",
+            com: "Art. 60, §2º da CF/88 define o rigoroso quórum qualificado para emendas."
+        },
+        {
+            p: "Se 300 deputados estiverem presentes, quantos votos são necessários para aprovar uma Lei Ordinária?",
+            opts: ["A) 151 votos (maioria simples).", "B) 257 votos (maioria absoluta).", "C) 308 votos (três quintos).", "D) Todos os 300 votos."],
+            cor: "A",
+            com: "Estando presente o quórum de instalação (maioria absoluta), a lei ordinária exige apenas maioria dos presentes."
+        },
+        {
+            p: "O que acontece se a LDO (Lei de Diretrizes Orçamentárias) não for aprovada até julho?",
+            opts: ["A) O Presidente assume o Legislativo.", "B) A sessão legislativa não será interrompida (não há recesso).", "C) Os salários são suspensos.", "D) Nada acontece."],
+            cor: "B",
+            com: "Art. 57, §2º da CF: A sessão legislativa não será interrompida sem a aprovação do projeto de LDO."
+        },
+        {
+            p: "A maioria qualificada de três quintos é uma exigência para:",
+            opts: ["A) Leis Ordinárias.", "B) Leis Complementares.", "C) Emendas Constitucionais.", "D) Decretos Legislativos."],
+            cor: "C",
+            com: "A PEC exige o quórum mais alto do nosso processo legislativo ordinário/qualificado."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Selecione uma opção.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Correto!</strong> " + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Errado.</strong> O gabarito é " + q.cor + ". " + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado" : "Próxima";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('score-text').innerText = `${score} / ${questions.length}`;
+            }
+        }
+    }
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

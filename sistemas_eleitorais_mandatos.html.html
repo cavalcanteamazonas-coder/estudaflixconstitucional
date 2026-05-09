@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Sistemas Eleitorais e Mandatos - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #16a085;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --text: #34495e;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 10px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 2px solid #edf2f7;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #f0fff4;
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent);
+            background-color: #e6fffa;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .correct { background-color: #d1fae5; color: #065f46; border-left: 5px solid var(--success); }
+        .wrong { background-color: #fee2e2; color: #991b1b; border-left: 5px solid var(--error); }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .final-score { font-size: 3.5rem; color: var(--accent); font-weight: 800; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← VOLTAR AO PORTAL</a></div>
+    <h1>Sistemas Eleitorais e Mandatos</h1>
+    <p>Simulado Acadêmico: Câmara vs. Senado</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Concluído</h2>
+        <div class="final-score" id="final-score">0/0</div>
+        <p id="performance-text" style="margin-bottom: 25px;"></p>
+        <button class="btn-action" style="float:none;" onclick="location.reload()">Refazer Simulado</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "Sobre o sistema eleitoral para Deputado Federal, é correto afirmar que:",
+            opts: ["A) É majoritário, vencendo os mais votados.", "B) O voto na legenda partidária influencia a definição das cadeiras.", "C) Os votos de legenda possuem apenas valor estatístico.", "D) Aplica-se exclusivamente às eleições municipais."],
+            cor: "B",
+            com: "No sistema proporcional, os votos no candidato e na legenda somam para o quociente partidário. Art. 45 da CF."
+        },
+        {
+            p: "Como é definida a composição do Senado Federal no Brasil?",
+            opts: ["A) Proporcional à população de cada Estado.", "B) Cada Estado e o DF elegem três senadores, independente da população.", "C) Por sistema proporcional de lista fechada.", "D) Por mandato de 4 anos coincidindo com os deputados."],
+            cor: "A",
+            com: "O Senado é a casa da Federação: representação paritária (igual) para todos os entes. Art. 46 da CF."
+        },
+        {
+            p: "No sistema proporcional brasileiro, o eleitor pode votar:",
+            opts: ["A) Apenas no candidato individualmente.", "B) Apenas no partido político.", "C) Tanto na legenda partidária quanto no candidato.", "D) Apenas se o partido atingir a cláusula de barreira."],
+            cor: "C",
+            com: "O eleitor escolhe se quer prestigiar o indivíduo ou o partido, ambos contam para o cálculo de vagas."
+        },
+        {
+            p: "A eleição para o Senado Federal adota qual sistema?",
+            opts: ["A) Majoritário, sendo eleitos os candidatos mais votados.", "B) Proporcional, visando a pluralidade partidária.", "C) Misto, conforme o quociente eleitoral.", "D) Indireto, por votação na Câmara dos Deputados."],
+            cor: "C",
+            com: "Diferente da Câmara, o Senado usa o sistema majoritário, como nas eleições para o Executivo. Art. 46 da CF."
+        },
+        {
+            p: "A representação na Câmara dos Deputados respeita quais limites por Estado?",
+            opts: ["A) Mínimo de 3 e máximo de 50.", "B) Mínimo de 8 e máximo de 70.", "C) É igual para todos os Estados.", "D) Definido livremente por Lei Complementar anual."],
+            cor: "B",
+            com: "Art. 45, §1º da CF. Garante que nenhum estado fique sem voz e nenhum domine totalmente a Casa."
+        },
+        {
+            p: "Qual a duração dos mandatos de Deputado Federal e Senador, respectivamente?",
+            opts: ["A) 4 anos e 4 anos.", "B) 8 anos e 4 anos.", "C) 4 anos e 8 anos.", "D) 4 anos e vitalício."],
+            cor: "C",
+            com: "O senador tem um mandato que abrange duas legislaturas (8 anos), visando estabilidade política."
+        },
+        {
+            p: "Por que um candidato com muitos votos individuais pode não ser eleito para Deputado?",
+            opts: ["A) Por falta de idade mínima.", "B) Porque seu partido não atingiu o quociente eleitoral necessário.", "C) Porque o sistema exige obrigatoriamente dois turnos.", "D) Por decisão discricionária do TSE."],
+            cor: "B",
+            com: "No sistema proporcional, a vaga pertence primeiro ao partido/federação e depois ao candidato."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Por favor, selecione uma alternativa.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Correto!</strong><br>" + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Errado.</strong> O gabarito é " + q.cor + ".<br>" + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado Final" : "Próxima Questão";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+        const p = (score/questions.length)*100;
+        document.getElementById('performance-text').innerText = p >= 70 ? "Excelente! Você compreende bem a mecânica eleitoral do Congresso." : "Bom esforço. Vale revisar a diferença entre quociente eleitoral e sistema majoritário.";
+    }
+
+    window.onload = showQuestion;
+</script>
+</body>
+</html>

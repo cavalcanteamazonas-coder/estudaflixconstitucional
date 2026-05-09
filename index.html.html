@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTUDAFLIX | Portal Acadêmico</title>
+    <style>
+        :root {
+            --primary-silver: #bdc3c7;
+            --dark-silver: #7f8c8d;
+            --light-silver: #f8f9fa;
+            --white: #ffffff;
+            --accent-gold: #d4af37;
+            --text-main: #2c3e50;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--white);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-silver) 100%);
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-silver);
+        }
+
+        .logo-container h1 {
+            font-size: 3rem;
+            letter-spacing: 5px;
+            color: var(--dark-silver);
+            font-weight: 800;
+        }
+
+        .logo-container span { color: var(--accent-gold); }
+
+        .dev-info { font-size: 0.9rem; color: var(--dark-silver); margin-top: 10px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .alert-box {
+            border: 1px solid var(--accent-gold);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: #fffdf5;
+        }
+
+        .grid-temas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tema-card {
+            background: var(--light-silver);
+            border: 1px solid var(--primary-silver);
+            padding: 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tema-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            background: var(--white);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .tema-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-main); }
+        .badge { font-size: 0.7rem; font-weight: bold; color: var(--accent-gold); text-transform: uppercase; }
+        
+        footer { text-align: center; padding: 40px; color: var(--dark-silver); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <h1>ESTUDA<span>FLIX</span></h1>
+        <p class="dev-info">Desenvolvido por <strong>Wallace Cavalcante</strong> | 3º Período de Direito</p>
+    </div>
+</header>
+
+<main class="container">
+    <div class="alert-box">
+        <strong>📚 AVISO:</strong> Tenha seu <strong>Vade Mecum</strong> em mãos. Questões padrão <strong>FGV</strong>.
+    </div>
+
+    <div class="grid-temas">
+        <a href="tema1.html" class="tema-card"><div><span class="badge">Tema 01</span><h3>CPI e Poder de Investigação</h3></div></a>
+        <a href="tema2.html" class="tema-card"><div><span class="badge">Tema 02</span><h3>Sistemas Eleitorais e Mandatos</h3></div></a>
+        <a href="tema3.html" class="tema-card"><div><span class="badge">Tema 03</span><h3>Funções Típicas e Atípicas</h3></div></a>
+        <a href="tema4.html" class="tema-card"><div><span class="badge">Tema 04</span><h3>Processo Legislativo: Emendas</h3></div></a>
+        <a href="tema5.html" class="tema-card"><div><span class="badge">Tema 05</span><h3>Controle de Constitucionalidade</h3></div></a>
+        <a href="tema6.html" class="tema-card"><div><span class="badge">Tema 06</span><h3>Direitos e Garantias Fundamentais</h3></div></a>
+        <a href="tema7.html" class="tema-card"><div><span class="badge">Tema 07</span><h3>Remédios Constitucionais</h3></div></a>
+        <a href="tema8.html" class="tema-card"><div><span class="badge">Tema 08</span><h3>Organização do Estado</h3></div></a>
+        <a href="tema9.html" class="tema-card"><div><span class="badge">Tema 09</span><h3>Poder Executivo e Crimes de Resp.</h3></div></a>
+        <a href="tema10.html" class="tema-card"><div><span class="badge">Tema 10</span><h3>Poder Judiciário e CNJ</h3></div></a>
+        <a href="tema11.html" class="tema-card"><div><span class="badge">Tema 11</span><h3>Administração Pública (Art. 37)</h3></div></a>
+        <a href="tema12.html" class="tema-card"><div><span class="badge">Tema 12</span><h3>Defesa do Estado e Inst. Democráticas</h3></div></a>
+        <a href="tema13.html" class="tema-card"><div><span class="badge">Tema 13</span><h3>Ordem Social e Tributária</h3></div></a>
+    </div>
+</main>
+
+<footer>
+    &copy; 2026 ESTUDAFLIX - Wallace Cavalcante.
+</footer>
+
+</body>
+</html>

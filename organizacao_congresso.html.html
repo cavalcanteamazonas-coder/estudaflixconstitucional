@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado: Funcionamento do Congresso - Wallace Cavalcante</title>
+    <style>
+        :root {
+            --primary: #004a2f; /* Verde Bandeira */
+            --accent: #f1c40f;  /* Amarelo Ouro */
+            --bg: #ecf0f1;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --success: #27ae60;
+            --error: #c0392b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto 15px;
+            text-align: left;
+        }
+
+        .btn-home {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px 15px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #f0f9f4;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .wrong { background-color: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+        }
+
+        #result-screen { display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-container"><a href="index.html" class="btn-home">← PÁGINA INICIAL</a></div>
+    <h1>Organização do Poder Legislativo</h1>
+    <p>Legislatura, Sessões e Mesas Diretoras</p>
+</header>
+
+<main>
+    <div id="quiz-area" class="quiz-card">
+        <div id="progress" class="progress-info">Questão 1 de 7</div>
+        <div id="question-content"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="btn-action" onclick="handleAction()">Confirmar Resposta</button>
+    </div>
+
+    <div id="result-screen" class="quiz-card">
+        <h2>Simulado Finalizado</h2>
+        <p id="score-text" style="font-size: 2.5rem; margin: 20px 0; color: var(--primary);"></p>
+        <button class="btn-action" style="float:none;" onclick="location.reload()">Reiniciar Simulado</button>
+    </div>
+</main>
+
+<script>
+    const questions = [
+        {
+            p: "De acordo com a Constituição Federal, o que define uma 'Legislatura'?",
+            opts: ["A) O período anual de funcionamento do Congresso.", "B) O mandato integral dos Senadores (8 anos).", "C) O período de quatro anos, coincidente com o mandato dos Deputados Federais.", "D) O intervalo entre as sessões legislativas extraordinárias."],
+            cor: "C",
+            com: "Art. 44, Parágrafo único: Cada legislatura terá a duração de quatro anos."
+        },
+        {
+            p: "Sobre a eleição da Mesa Diretora da Câmara e do Senado, assinale a correta:",
+            opts: ["A) Ocorre em sessão conjunta presidida pelo STF.", "B) Ocorre em sessões preparatórias previstas na Constituição.", "C) É realizada apenas uma vez a cada quatro anos.", "D) Depende de autorização do Poder Executivo."],
+            cor: "B",
+            com: "Art. 57, §4º: As casas se reúnem em sessões preparatórias para posse e eleição das Mesas para mandato de 2 anos."
+        },
+        {
+            p: "O Congresso Nacional pode entrar em recesso em julho sem votar qual projeto?",
+            opts: ["A) Lei Orçamentária Anual (LOA).", "B) Plano Plurianual (PPA).", "C) Lei de Diretrizes Orçamentárias (LDO).", "D) Medidas Provisórias pendentes."],
+            cor: "C",
+            com: "Art. 57, §2º: A sessão legislativa não será interrompida sem a aprovação do projeto de lei de diretrizes orçamentárias."
+        },
+        {
+            p: "Quantas 'Sessões Legislativas Ordinárias' compõem uma única 'Legislatura'?",
+            opts: ["A) Uma única sessão de 4 anos.", "B) Duas sessões bienais.", "C) Quatro sessões anuais.", "D) Oito sessões semestrais."],
+            cor: "C",
+            com: "A legislatura dura 4 anos e cada ano civil de trabalho equivale a uma sessão legislativa ordinária."
+        },
+        {
+            p: "Sobre o funcionamento anual do Congresso (Sessão Legislativa Ordinária), é correto afirmar:",
+            opts: ["A) Reúne-se de 1º de janeiro a 31 de dezembro.", "B) Reúne-se em dois períodos: 2 de fevereiro a 17 de julho e 1º de agosto a 22 de dezembro.", "C) O calendário é definido livremente pelos partidos.", "D) Não pode haver trabalho legislativo nos meses de janeiro e julho em nenhuma hipótese."],
+            cor: "B",
+            com: "Este é o calendário fixo previsto no Art. 57, caput, da CF/88."
+        },
+        {
+            p: "A eleição dos membros das Mesas Diretoras para o segundo biênio da legislatura deve observar:",
+            opts: ["A) A proibição de recondução para o mesmo cargo na eleição imediatamente subsequente na mesma legislatura.", "B) A obrigatoriedade de alternância entre partidos de esquerda e direita.", "C) A aprovação prévia pelo Senado Federal.", "D) O critério exclusivo de idade dos parlamentares."],
+            cor: "A",
+            com: "Art. 57, §4º veda a recondução para o mesmo cargo dentro da mesma legislatura (embora o STF tenha interpretações específicas para mudanças de legislatura)."
+        },
+        {
+            p: "Em caso de urgência ou interesse público relevante, o Congresso pode ser reunido fora do período ordinário. Isso se chama:",
+            opts: ["A) Sessão Preparatória.", "B) Sessão Conjunta Obrigatória.", "C) Convocação Extraordinária.", "D) Intervenção Legislativa."],
+            cor: "C",
+            com: "Art. 57, §6º disciplina a convocação extraordinária pelo Presidente da República, das Casas ou por requerimento da maioria."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let selected = null;
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        isAnswered = false;
+        selected = null;
+        document.getElementById('progress').innerText = `Questão ${currentIndex + 1} de ${questions.length}`;
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').innerText = "Confirmar Resposta";
+        
+        let html = `<div class="question-text">${q.p}</div><div class="options-container">`;
+        q.opts.forEach(opt => {
+            html += `<button class="option-btn" onclick="selectOpt('${opt.charAt(0)}', this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        document.getElementById('question-content').innerHTML = html;
+    }
+
+    function selectOpt(letter, btn) {
+        if(isAnswered) return;
+        selected = letter;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function handleAction() {
+        if(!selected) return alert("Por favor, escolha uma alternativa.");
+        if(!isAnswered) {
+            isAnswered = true;
+            const q = questions[currentIndex];
+            const fb = document.getElementById('feedback-box');
+            fb.style.display = 'block';
+            if(selected === q.cor) {
+                score++;
+                fb.className = "feedback correct";
+                fb.innerHTML = "<strong>Acertou!</strong> " + q.com;
+            } else {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "<strong>Errado.</strong> O gabarito é " + q.cor + ". " + q.com;
+            }
+            document.getElementById('action-btn').innerText = currentIndex === questions.length - 1 ? "Ver Resultado Final" : "Próxima Questão";
+        } else {
+            currentIndex++;
+            if(currentIndex < questions.length) showQuestion();
+            else {
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+                document.getElementById('score-text').innerText = `${score} / ${questions.length}`;
+            }
+        }
+    }
+    window.onload = showQuestion;
+</script>
+</body>
+</html>
