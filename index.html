@@ -49,7 +49,7 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -67,7 +67,7 @@
 
         .grid-temas {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
 
@@ -82,6 +82,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            min-height: 180px;
         }
 
         .tema-card:hover {
@@ -100,23 +101,30 @@
             font-size: 0.7rem;
             font-weight: bold;
             margin-bottom: 15px;
+            text-transform: uppercase;
         }
 
-        .tema-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .tema-card h3 { 
+            font-size: 1.1rem; 
+            margin-bottom: 10px; 
+            color: var(--text-main);
+        }
         
         .btn-link {
             font-weight: bold;
             color: var(--accent-gold);
             margin-top: 15px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
         }
 
         footer {
             text-align: center;
-            padding: 40px;
+            padding: 50px;
             color: var(--dark-silver);
             font-size: 0.8rem;
             border-top: 1px solid var(--light-silver);
+            margin-top: 40px;
         }
     </style>
 </head>
@@ -125,14 +133,14 @@
 <header>
     <div class="logo-container">
         <h1>ESTUDA<span>FLIX</span></h1>
-        <p class="developer-info">Desenvolvido por <strong>Wallace Cavalcante</strong> | 3º Período de Direito</p>
+        <p class="developer-info">Desenvolvido por <strong>Wallace Cavalcante</strong> | Acadêmico de Direito - 3º Período</p>
     </div>
 </header>
 
 <main class="container">
     <div class="vade-mecan-alert">
-        <h3>🚨 ATENÇÃO ACADÊMICO</h3>
-        <p>Recomendamos o uso do <strong>Vade Mecum</strong>. Simulados padrão <strong>FGV</strong>.</p>
+        <h3>🚨 AVISO AO ESTUDANTE</h3>
+        <p>Mantenha seu <strong>Vade Mecum</strong> em mãos. Questões elaboradas no padrão da banca <strong>FGV</strong>.</p>
     </div>
 
     <div class="grid-temas">
@@ -175,11 +183,21 @@
             <div><span class="badge-fgv">FGV</span><h3>CPI: Limites e Direitos</h3></div>
             <div class="btn-link">Iniciar Simulado →</div>
         </a>
+
+        <a href="composicao_senado.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Composição do Senado</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
+
+        <a href="processo_legislativo.html" class="tema-card">
+            <div><span class="badge-fgv">FGV</span><h3>Processo Legislativo</h3></div>
+            <div class="btn-link">Iniciar Simulado →</div>
+        </a>
     </div>
 </main>
 
 <footer>
-    &copy; 2026 ESTUDAFLIX - Wallace Cavalcante
+    &copy; 2026 ESTUDAFLIX - Wallace Cavalcante. Todos os direitos reservados.
 </footer>
 
 </body>
